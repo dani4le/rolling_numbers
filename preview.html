@@ -1,0 +1,76 @@
+<!doctype html>
+ 
+<html>
+<head>
+	<meta charset="utf-8" />
+	<title>Rolling Numbers Input</title>
+	<script src="javascript/jquery-1.8.2.js"></script>
+	<script src="javascript/jquery-ui-1.10.2.js"></script>
+	
+	<link rel="stylesheet" href="css/rolling_numbers.css" />
+	<script src="javascript/rolling_numbers.js"></script>
+	<style>
+	table{
+		display:inline-table;
+		box-shadow:0 0 4px grey inset;
+		padding:5px;
+		margin:20px;
+		margin-left:0px;
+		border-radius:5px;
+	}
+	table button{
+		width:130px;
+		padding:5px;
+	}
+	</style>
+</head>
+<body>
+	<div class='sample' style="background-image: url('css/images/texture_stripe.jpg');"></div>
+	<div class='sample' style="background-image: url('css/images/texture.jpg');font-size:60px;" ></div>
+	<script>
+		function res(out){
+			$('#output').html(String(out));
+		}
+		
+		<!-- var settings={max:10, editable:1}; inserirla come secondo argomento di setRollingNumbers -->
+		var a=setRollingNumbers($(".sample"));
+	</script>
+	<hr/>
+	<table><tr><td>
+<input type='checkbox' onclick='res(a.disable(this.checked));' title='disable/enable field'>disabled</input></td><td>
+<input type='checkbox' checked onclick='res(a.draggable(this.checked));' title='disable/enable dragging via mouse on the field'>draggable</input></td><td>
+<input type='checkbox' onclick='res(a.editable(this.checked));' title='disable/enable editability'>editable<br>(Chrome, Opera)</input></td><td>
+<input type='checkbox' checked onclick='res(a.rolling(this.checked));' title='disable/enable field changing via mouse scrolling over it'>mouse scrolling</input></td><td>
+<input type='checkbox' onclick='if(this.checked)m=5;else m=Number.POSITIVE_INFINITY;res(a.limits({max:m}));' title='disable/enable max limit, to have effect the value must be in the range'>max limit=5</input><br/>
+<input type='checkbox' onclick='if(this.checked)m=-5;else m=Number.NEGATIVE_INFINITY;res(a.limits({min:m}));' title='disable/enable min limit, to have effect the value must be in the range'>min limit=-5</input></td></tr><tr><td>
+<button type='button' onclick='res(a.disable());'>disable()</button></td><td>
+<button type='button' onclick='res(a.draggable());'>draggable()</button></td><td>
+<button type='button' onclick='res(a.editable());'>editable()</button></td><td>
+<button type='button' onclick='res(a.rolling());'>mouse rolling()</button></td><td>
+<button type='button' onclick='res(a.limits());'>limits()</button></td></tr>
+	</table><br/>
+	<table><tr><td>
+<button type='button' onclick='res(a.setLook("plain"));' title='flat aspect'>setLook("plain")</button></td><td>
+<button type='button' onclick='res(a.setLook("glossy"));' title='flat aspect with shiny effect'>setLook("glossy")</button></td></tr><tr><td>
+<button type='button' onclick='res(a.setLook("shaded"));' title='cylinder aspect'>setLook("shaded")</button></td><td>
+<button type='button' onclick='res(a.setLook());' title='cylinder aspect with shiny effect'>setLook()</button></td></tr>
+	</table>
+	<table><tr><td>
+<button type='button' onclick='res(a.setHeight(50));'>setHeight(50)</button></td><td>
+<button type='button' onclick='res(a.setWidth(250));'>setWidth(250)</button></td></tr>
+	</table><br/>
+	<table><tr><td>
+<button type='button' onclick='res(a.value(4, 4000));' title='increase by 4 steps in 4 seconds'>value(4, 4000)</button></td><td>
+<button type='button' onclick='res(a.value());'>value()</button></td></tr>
+	</table>
+	<table><tr><td>
+<button type='button' onclick='res(a.toggleButtons());' title='show/hide arrow buttons'>toggleButtons()</button></td><td>
+<button type='button' onclick='res(a.getRoot());' title='return base object from which the component were built'>getRoot()</button></td></tr><tr><td>
+<button type='button' onclick='res(a.getActiveInput());' title='return fields that are still moving'>getActiveInput()</button></td><td>
+<button type='button' onclick='res(a.turnToHtml5());' title='convert in html5 number input'>turnToHtml5()</button></td></tr>
+	</table>
+	<hr/>
+	This is what the function returns:
+	<i id='output'>...</i>
+</body>
+</html>

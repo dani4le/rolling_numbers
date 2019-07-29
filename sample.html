@@ -1,0 +1,20 @@
+<!doctype html>
+ 
+<html>
+<head>
+	<meta charset="utf-8" />
+	<title>Rolling Numbers Input</title>
+	<script src="javascript/jquery-1.8.2.js"></script>
+	<script src="javascript/jquery-ui-1.10.2.js"></script>
+	
+	<link rel="stylesheet" href="css/rolling_numbers.css" />
+	<script src="javascript/rolling_numbers.js"></script>
+</head>
+<body>
+	<div class='sample' style="font-size:40px;"></div>
+	<script>
+		var settings={max:10, editable:1};
+		var a=setRollingNumbers($(".sample"), settings);
+	</script>
+</body>
+</html>

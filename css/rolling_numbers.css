@@ -1,0 +1,80 @@
+/* === Container === */
+
+.rolling_numbers{
+	display: inline-table;
+	overflow:hidden;
+	position:relative;
+	font-family: sans-serif;
+	font-size:20px;
+	width: 7ex;
+	height: 1.1em;
+	background-color: white;
+	border: 1px solid #7F9DB9;
+	z-index:1;
+	background-size:contain;
+	cursor:default;
+}
+.rolling_numbers:before,.rolling_numbers:after{
+	position:absolute;
+	top:0px;
+	left:0px;
+	right:0px;
+	bottom:-1px;
+	content:"";
+	z-index:-1;
+}
+.rolling_numbers.shaded:before{
+	box-shadow: 0 0.03em 0.15em hsla(0,0%,0%, 0.6) inset;
+	background: linear-gradient(to bottom, hsla(0,0%,0%, 0.4) 0%, hsla(0,0%,60%, 0) 50%, hsla(0,0%,0%, 0.45) 100%);
+	background: -o-linear-gradient(top, hsla(0,0%,0%,0.4) 0%,hsla(0,0%,60%,0) 50%,hsla(0,0%,0%,0.45) 100%); /* Opera 11.10+ */
+	background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,hsla(0,0%,0%,0.4)), color-stop(50%,hsla(0,0%,60%,0)), color-stop(100%,hsla(0,0%,0%,0.45))); /* Chrome,Safari4+ */
+}
+.rolling_numbers.glossy:after{
+	background: linear-gradient(to bottom, hsla(200,21%,92%,0.2) 0%, hsla(200,21%,92%,0.4) 49%,hsla(205,18%,0%,0) 51%);
+	background: -o-linear-gradient(top, hsla(195,19%,92%,0.2) 0%,hsla(195,19%,92%,0.4) 49%,hsla(0,0%,0%,0) 51%); /* Opera 11.10+ */
+	background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,hsla(195,19%,92%,0.2)), color-stop(49%,hsla(195,19%,92%,0.4)), color-stop(51%,hsla(0,0%,0%,0))); /* Chrome,Safari4+ */
+}
+.rolling_numbers[disabled="disabled"]:after{
+	background-color: hsla(0,0%,80%,0.4);
+	z-index:1;
+}
+
+/* === Buttons === */
+
+.rolling_numbers .rolling_numbers_buttons{
+	position: relative;
+	float: right;
+	height: 1.1em;
+	cursor: default;
+}
+.rolling_numbers .rolling_numbers_buttons button{
+	display: block;
+	font-family: inherit;
+	font-size: 25%;
+	width:7ex;
+	height: 2.2em;
+	padding:0px;
+	-moz-user-select: none;
+	-webkit-user-select: none;
+	z-index:2;
+}
+
+/* === Numbers === */
+
+.rolling_numbers .rolling_numbers_input{
+	position: relative;
+	font-size: inherit;
+	float: right;
+	text-align:right;
+	height: 1.1em;
+	vertical-align:middle;
+}
+.rolling_numbers .rolling_numbers_input div{
+	-moz-user-select: none;
+	-webkit-user-select: none;
+}
+.rolling_numbers .rolling_numbers_input div[contenteditable="true"]{
+	outline: none;
+	-moz-user-select: text;
+	-webkit-user-select: text;
+}

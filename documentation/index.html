@@ -1,0 +1,304 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<head lang="en">
+	<meta http-equiv="content-type" content="text/html;charset=utf-8">
+	<title>Rolling Numbers Input Documentation</title>
+	<!-- Framework CSS -->
+	<link rel="stylesheet" href="assets/blueprint-css/screen.css" type="text/css" media="screen, projection">
+	<link rel="stylesheet" href="assets/blueprint-css/print.css" type="text/css" media="print">
+	<!--[if lt IE 8]><link rel="stylesheet" href="assets/blueprint-css/ie.css" type="text/css" media="screen, projection"><![endif]-->
+	<link rel="stylesheet" href="assets/blueprint-css/plugins/fancy-type/screen.css" type="text/css" media="screen, projection">
+	<style type="text/css" media="screen">
+		p, table, hr, .box { margin-bottom:25px; }
+		.box p { margin-bottom:10px; }
+	</style>
+</head>
+
+
+<body>
+	<div class="container">
+	
+		<h3 class="center alt">&ldquo;Rolling Numbers Input&rdquo; documentation by Daniele Alesi</h3>
+		
+		<hr>
+		
+		<h2 id="toc" class="alt">Table of Contents</h2>
+		<ol class="alpha">
+			<li><a href="#creation">Creation</a></li>
+			<li><a href="#htmlStructure">HTML Structure</a></li>
+			<li><a href="#cssFiles">CSS Files and Structure</a></li>
+			<li><a href="#javascript">JavaScript</a></li>
+			<li><a href="#browserCompatibility">Browser compatibility</a></li>
+			<li><a href="#credits">Sources and Credits</a></li>
+		</ol>
+		
+		<hr>
+		
+		<h3 id="creation"><strong>A) Creation</strong> - <a href="#toc">top</a></h3>
+		
+		<p>
+			The Rolling Numbers Input can be made from a jQuery selection of only <code>< input type='number' ></code> or from a jQuery selection of containers like DIV and SPAN.
+			You can also set the options of this tool through a javascript object.
+			<br/><b>The creation syntax is this below:</b>
+			<code>
+				<br/>< div class='sample'>< /div>
+				<br/>< script>
+					<br/>var settings={max:10, editable:true};
+					<br/>var a=setRollingNumbers($(".sample"), settings);
+				<br/>< /script>
+			</code>
+		</p>
+		
+		<p>
+			The options available for this tools are:
+			<table>
+				<tr><th>Type</th><th>Name</th><th>Default</th><th>Description</th></tr>
+				<tr><td style="font-style:italic;">Number</td><td>value</td><td style="font-style:italic;">0</td><td>the starting value</td></tr>
+				<tr><td style="font-style:italic;">Number</td><td>step</td><td style="font-style:italic;">1</td><td>the minimum increment</td></tr>
+				<tr><td style="font-style:italic;">Number</td><td>max</td><td style="font-style:italic;">positive infinity</td><td>the top limit</td></tr>
+				<tr><td style="font-style:italic;">Number</td><td>min</td><td style="font-style:italic;">negative infinity</td><td>the down limit</td></tr>
+				<tr><td style="font-style:italic;">Number</td><td>decimal</td><td style="font-style:italic;">0</td><td>the numbers of digits after the decimal point</td></tr>
+				<tr><td style="font-style:italic;">Boolean</td><td>editable</td><td style="font-style:italic;">false</td><td>allow the interaction via keyboard</td></tr>
+				<tr><td style="font-style:italic;">Boolean</td><td>disabled</td><td style="font-style:italic;">false</td><td>deny the user interaction</td></tr>
+				<tr><td style="font-style:italic;">Boolean</td><td>draggable</td><td style="font-style:italic;">true</td><td>allow the interaction via pointer</td></tr>
+				<tr><td style="font-style:italic;">Boolean</td><td>rolling</td><td style="font-style:italic;">true</td><td>allow spatial movement of input fields and background</td></tr>
+				<tr><td style="font-style:italic;">Boolean</td><td>toggle_buttons</td><td style="font-style:italic;">true</td><td>display the buttons</td></tr>
+				<tr><td style="font-style:italic;">Boolean</td><td>mousewheel_invert</td><td style="font-style:italic;">false</td><td>invert the effect of the mouse wheel action</td></tr>
+			</table>
+		</p>
+		
+		<hr>
+		
+		<h3 id="htmlStructure"><strong>B) HTML Structure</strong> - <a href="#toc">top</a></h3>
+		<p>
+		This tool is a DIV containing 2 other DIVs, respectively containing 2 BUTTONs and 2 DIVs, and an INPUT type hidden.
+
+		<img src="assets/images/htmlstructure.png" alt="HTML Structure" />
+		
+		<p>
+			If you would like to edit the color, font, or style the Rolling Numbers Input, you have to style the father element, the one which has the class <i style="color:red;">rolling_numbers</i>.
+			<br/>I strongly suggest to put a tileable background image, in this way the rolling effect will be more evident to the user.
+			<br/>If you find that your new style is not overriding, it is most likely because of a specificity problem. Scroll down in your CSS file and make sure that there isn't a similar style that has more weight.
+			<br/>So, to ensure that your new styles are applied, make sure that they carry enough "weight" and that there isn't a style lower in the CSS file that is being applied after yours.
+		</p>
+		<p>The INPUT type hidden was introduced to support the submit through FORM.</p>
+
+		<hr>
+
+		<h3 id="cssFiles"><strong>C) CSS Files and Structure</strong> - <a href="#toc">top</a></h3>
+
+		<p>
+			This tool uses one CSS file. The file has the following structure:
+		</p>
+
+		<pre>
+			/* === Container === */
+		
+			some code
+		
+			/* === Buttons === */
+			
+			some code
+			
+			/* === Numbers === */
+			
+			some code
+		</pre>
+		
+		<p>
+			If you would like to edit a specific part of the tool, simply find the appropriate label in the CSS file, and then scroll down until you find the style that needs to be edited.
+			<br/>The pseudo-elements :before and :after improve the graphics of this tool, you can toggle them using the classes <i style="color:red;">shaded</i> and <i style="color:red;">glossy</i>, the respective effects render only if these classes are associated with the class <i style="color:red;">rolling_numbers</i>, so:
+		</p> 
+		
+		<pre>
+			div class='rolling_numbers shaded glossy'
+		</pre>
+		
+		<p>
+			This div will show the gradients, but:
+		</p> 
+		
+		<pre>
+			div class='shaded glossy'
+		</pre>
+		
+		<p>
+			This one will not display the gradients.
+			<br/><br/>Warning: in IE these graphical enhacements don't take effect.
+		</p> 
+
+		<hr>
+		
+		<h3 id="javascript"><strong>D) JavaScript</strong> - <a href="#toc">top</a></h3>
+		
+		<p>This tool uses three Javascript files.</p>
+		
+		<ol>
+			<li>jQuery</li>
+			<li>jQuery UI</li>
+			<li>Rolling Numbers script</li>
+		</ol>
+		  
+		<ol>
+			<li>jQuery is a Javascript library that greatly reduces the amount of code that you must write.</li>
+			<li>jQuery UI is another Javascript library improving the features of JQuery, in this case, it's imported to manage the easing of rolling animations.</li>
+			<li>The core of this tool is in the script. There are a few functions worth looking over.
+				<pre>	
+function modifyValue(source, increment, duration){
+	var source_root=source.parent();
+	var l_height=source_root.innerHeight();
+	var step_value=fields.step;
+	var max=fields.max, min=fields.min;
+	var decim=fields.decimal;
+	
+	var currValue=Number(source_root.val()), delta;
+	if(currValue+increment*step_value>max && increment>=0.2)
+		delta=parseInt((max-currValue)/step_value);
+	else if(currValue+increment*step_value < min && increment <= -0.2)
+		delta=parseInt((min-currValue)/step_value);
+	else
+		delta=increment;
+	
+	if(delta!=0){
+		var upBtn=source.siblings('.rolling_numbers_buttons').children(':first');
+		var downBtn=upBtn.next();
+		var turns=0;
+		var direction, inc_element;
+		if(delta>0){
+			direction=1;
+			inc_element=source.children(':first');
+		}
+		else{
+			direction=-1;
+			inc_element=source.children(':last');
+		}
+		if(Math.abs(delta)>=1){
+			upBtn.prop('disabled', false);
+			downBtn.prop('disabled', false);
+		}
+		if(duration>0 && fields.rolling){
+			var position;
+			source.stop();
+			source.animate({defaultValue:"+="+delta*l_height},{
+				duration:duration*delta/increment,
+				easing:'easeOutCubic',
+				step: function(now, fx){
+					var dummy=now.toFixed(decim);
+					position=dummy-l_height*turns;
+					var bound_check=false;
+					
+					if(position>0 && direction==1)
+						bound_check=true;
+					else if(position <= -l_height && direction==-1)
+						bound_check=true;
+					else if(position <= -l_height/2)
+						setActiveInput(source.children(':last'));
+					else if(position>-l_height/2)
+						setActiveInput(source.children(':first'));
+					
+					var sum=Number(inc_element.text())+direction*step_value;
+					if(bound_check && !(sum > max || sum < min)){
+						turns+=direction;
+						position-=direction*l_height;
+						inc_element.text(function(a,old){
+							var sibling=inc_element.siblings();
+							sibling.text(old);
+							setActiveInput(sibling);
+							return sum.toFixed(decim);
+						});
+					}
+					source.css('top',(position)+'px');
+					source_root.css('backgroundPosition','0px '+(position)+'px');
+				},
+				complete: function(){
+					normalize(source);
+				}
+			});
+		}
+		[ecc. ecc.]
+		source.queue(function(){
+			source.prop('defaultValue', function(a, old){
+				if(isNaN(old))
+					old=0;
+				return old-turns*l_height;
+			});
+			var active_input=source.children('[title]');
+			var finalValue=active_input.text();
+			source_root.attr('value', finalValue);
+			source_root.children(':last').attr('value', finalValue);
+			if(! fields.disabled){
+				upBtn.prop('disabled', (finalValue>=max));
+				downBtn.prop('disabled', (finalValue <= min));
+			}
+			source.dequeue();
+		});
+	}
+	else clearInterval(intervalID);
+}
+				</pre>
+				<p>
+					This function makes possible the movement of numbers and background, at first it calculates the number of increments (or decrements) to do in consideration of the <i>min</i> and <i>max</i> limits specified by the user. Then it makes an animation increasing a custom DOM parameter <i>defaultValue</i>.
+					<br/>A periodical formula calculates the new position for numbers and background.
+					<br/>If a new position exceeds the vertical boundaries, the numbers are incremented (or decremented) by one step and also the position is properly resetted through the periodical formula.
+					<br/>If a Number covers more than 50% of the Rolling Numbers Input visible space, the function signs it as active, calling the function <i>setActiveInput()</i>.
+					<br/>The ecc.ecc. part is referred to the procedure running when the resulting increment has to appear immediately, without adopting the animation, so the parameter <i>duration</i> is equal to 0. This section has an algorithm similar to the animation one, just more simplified beacause there is no need to consider spatial motion.
+					<br/>When the animation finishes, this function updates the propers HTML attributes, resets the DOM parameter <i>defaultValue</i> and, if the value has reached one of the limits specified by the user, it disables the correct button.
+				</p>
+				<p>
+					Another important part in the script is the public interface:
+				</p>
+				<pre>
+	disable: function(disab){
+		if(disab==null) return Boolean(fields.disabled);
+		else setDisabled(disab);
+	},
+	draggable: function(drag){
+		if(drag==null) return Boolean(fields.draggable);
+		else fields.draggable=drag;
+	},
+	editable: function(edit){
+		if(edit==null) return Boolean(fields.editable);
+		else setEditable(edit);
+	},
+	[ecc.ecc.]
+}
+				</pre>
+				<p>
+					The public interface allows the developer to get and set some properties and informations for this tool. In many public functions if you specify an argument they set the property with it, or else without argument, they return the current property value.
+					<br/>Here below a list of all the methods of the public interface:
+					<table>
+						<tr><th>Name</th><th>Description</th></tr>
+						<tr><td>disable</td><td>Set/get the disabled option</td></tr>
+						<tr><td>draggable</td><td>Set/get the draggable option</td></tr>
+						<tr><td>editable</td><td>Set/get the editable option</td></tr>
+						<tr><td>limits</td><td>Set/get the max and min options</td></tr>
+						<tr><td>rolling</td><td>Set/get the rolling option</td></tr>
+						<tr><td>toggleButtons</td><td>Show/hide buttons</td></tr>
+						<tr><td>value</td><td>Set the value passing the number of steps and duration in milliseconds/get the current value</td></tr>
+						<tr><td>getActiveInput</td><td>Get the element having the current value as text</td></tr>
+						<tr><td>getRoot</td><td>Get the root element</td></tr>
+						<tr><td>setHeight</td><td>Set the height rescaling the font-size, accept every units</td></tr>
+						<tr><td>setWidth</td><td>set the width, accept every units</td></tr>
+						<tr><td>setLook</td><td>Set the look of the element</td></tr>
+						<tr><td>turnToHtml5</td><td>Convert to <code>< input type="number" /></code> and destroy this object disabling any further method, accept new settings as argument</td></tr>
+					</table>
+				</p>
+			</li>
+		</ol>
+		
+		<hr>
+		
+		<h3 id="browserCompatibility"><strong>E) Browser compatibility</strong> - <a href="#toc">top</a></h3>
+		
+		<p>This tool is compatible with all the common browsers, but:</p>
+		
+		<ul>
+			<li>Safari, Internet Explorer and moile browsers don't have the number direct editing</li>
+			<li>Internet Explorer doesn't display the graphical enhacement</li>
+		</ul>
+		
+		<p><a href="#toc">Go To Table of Contents</a></p>
+		
+		<hr class="space">
+	</div><!-- end div .container -->
+</body>
+</html>
