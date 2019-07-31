@@ -24,114 +24,120 @@ function setRollingNumbers(root, settings){
 			mousewheel_invert: false				//invert the effect of the mouse wheel action
 		};
 	
-	if (settings!=null) $.extend(fields, settings);
-	if(root.filter('input').size()==root.size()){
-		var obj=new Object();
-		//take properties from the first element of the selection
-		if(isFinite(root.attr('value'))) obj.value=Number(root.attr('value'));
-		if(isFinite(root.attr('min'))) obj.min=Number(root.attr('min'));
-		if(isFinite(root.attr('max'))) obj.max=Number(root.attr('max'));
-		if(isFinite(root.attr('step'))) obj.step=Number(root.attr('step'));
-		obj.disabled=Boolean(root.attr('disabled'));
+	if (settings != null) $.extend(fields, settings);
+	//take the attributes from the first input of the selection
+	if(root.filter('input').size() == root.size()){
+		var obj = new Object();
+		if(isFinite(root.attr('value'))) obj.value = Number(root.attr('value'));
+		if(isFinite(root.attr('min'))) obj.min = Number(root.attr('min'));
+		if(isFinite(root.attr('max'))) obj.max = Number(root.attr('max'));
+		if(isFinite(root.attr('step'))) obj.step = Number(root.attr('step'));
+		obj.disabled = Boolean(root.attr('disabled'));
 		$.extend(fields, obj);
 		
+		//replication of accepted local HTML attributes
 		root.each(function(){
-			//replication of accepted local properties
-			var html='';
+			var html = '';
 			if(typeof $(this).attr('name') != 'undefined')
-				html+=' name="'+$(this).attr('name')+'"';
+				html += ' name="'+$(this).attr('name')+'"';
 			if(typeof $(this).attr('style') != 'undefined')
-				html+=' style="'+$(this).attr('style')+'"';
+				html += ' style="'+$(this).attr('style')+'"';
 			if(typeof $(this).attr('title') != 'undefined')
-				html+=' title="'+$(this).attr('title')+'"';
+				html += ' title="'+$(this).attr('title')+'"';
 			$(this).after('<div'+html+'></div>');
 		});
-		root=root.next();
+		root = root.next();
 		root.prev().remove();
 	}
-	else if(root.filter('input').size()>0){
+	//display an error message if the selection isn't convertable
+	else if(root.filter('input').size() > 0){
 		console.log(root);
-		console.error("The selection must have similar tag elements: container or INPUT");
+		console.error("The selection must have similar HTML elements: containers or inputs");
 		return;
 	}
-	if(ie) fields.editable=false;
+	if(ie) fields.editable = false;
 	
 	var x;
 	if(isNaN(fields.value))
-		x=0;
+		x = 0;
 	else x = Number(fields.value);
 	
-	var decim=fields.decimal,string_step=fields.step.toString();
-	if(decim<=0){
+	//if there's no specification of decimal attribute, check and set the number of decimal digits comparing the value and the step attribute
+	var decim = fields.decimal, string_step = fields.step.toString();
+	if(decim <= 0){
 		var string_x = fields.value.toString();
-		if(string_x.indexOf('.')>-1)
-			decim=string_x.split('.')[1].length;
+		if(string_x.indexOf('.') > -1)
+			decim = string_x.split('.')[1].length;
 		
-		if(string_step.indexOf('.')>-1){
-			var step_d=string_step.split('.')[1].length;
-			if(step_d>decim)
-				decim=step_d;
+		if(string_step.indexOf('.') > -1){
+			var step_d = string_step.split('.')[1].length;
+			if(step_d > decim)
+				decim = step_d;
 		}
+		fields.decimal = decim;
 	}
 	
+	//validate the value and the min max attribute, if it's all right, set the decimal digits of the value
 	var max = fields.max;
 	var min = fields.min;
-	if(x>max)
+	if(x> max)
 		console.error("value higher than max attribute");
-	if(x<min)
+	if(x < min)
 		console.error("value lower than min attribute");
-	if(max<min)
+	if(max < min)
 		console.error("impossible range of values, check the min and max attributes");
 	root.attr('value', x.toFixed(decim));
 	
-	var input_html='<div class="rolling_numbers_input"';
-	input_html+='><div title="">'+x.toFixed(decim)+'</div><div>'+((x-Number(string_step)).toFixed(decim))+'</div>';
-	input_html+='</div>';
+	//starting assembling the structure, the div with title attribute is the readable text, the other is not visible but needed for the animation
+	var input_html = '<div class="rolling_numbers_input"';
+	input_html += '><div title="">'+x.toFixed(decim)+'</div><div>'+((x-Number(string_step)).toFixed(decim))+'</div>';
+	input_html += '</div>';
 	
-	var buttons_html='<div class="rolling_numbers_buttons"';
-	buttons_html+=' ><button value="1" type="button" title=""';
-	if(x==max)
-		buttons_html+=' disabled';
+	var buttons_html = '<div class="rolling_numbers_buttons"';
+	buttons_html += ' ><button value="1" type="button" title=""';
+	if(x == max)
+		buttons_html += ' disabled';
 	//first button text is equal to '\u25B2'
-	buttons_html+='>▲</button><button value="-1" type="button" title=""';
-	if(x==min)
-		buttons_html+=' disabled';
+	buttons_html += '>▲</button><button value="-1" type="button" title=""';
+	if(x == min)
+		buttons_html += ' disabled';
 	//second button text is equal to '\u25BC'
-	buttons_html+='>▼</button></div>';
+	buttons_html += '>▼</button></div>';
 	
 	root.addClass('rolling_numbers shaded glossy');
 	if(opera) root.css('display', 'table-cell');
 	root.empty();
-	buttons=$(buttons_html).appendTo(root).children();
-	inputs_container=$(input_html).appendTo(root);
-	inp_hidden=$('<input type="hidden" />').appendTo(root);
+	buttons = $(buttons_html).appendTo(root).children();
+	inputs_container = $(input_html).appendTo(root);
+	//once completed assembling the structure, place inside the root elements an input hidden to have form submit compatibility
+	inp_hidden = $('<input type="hidden" />').appendTo(root);
 	if(! fields.toggle_buttons) buttons.parent().hide();
 	
-	var l_height=root.innerHeight();
-	if(x==min){
+	var l_height = root.innerHeight();
+	if(x == min){
 		inputs_container.html('<div>'+((x+Number(string_step)).toFixed(decim))+'</div><div>'+x+'</div>');
 		inputs_container.css('top',(-l_height)+'px');
 		inputs_container.prop('defaultValue',-l_height);
 		root.css('backgroundPosition','0px '+(-l_height)+'px');
 	}
 	else root.css('backgroundPosition','0px 0px');
-	fields.decimal=decim;
 	
 	inp_hidden.each(function(){
-		var source=$(this);
+		var source = $(this);
 		source.attr('name', source.parent().attr('name'));
 		if(fields.value) source.attr('value', fields.value);
 	});
 	setEditable(fields.editable);
-	if(fields.disabled) setDisabled(fields.disabled);
+	setDisabled(fields.disabled);
 	
+	//attach the mouse scrollwheel and the mobile touch listener for the dragging effect and the buttons caring about compatibility
 	var mousewheelevt;
-	if(firefox) mousewheelevt="DOMMouseScroll";
-	else mousewheelevt="mousewheel";
-	var js_root=root.get(), js_buttons=buttons.get();
+	if(firefox) mousewheelevt = "DOMMouseScroll";
+	else mousewheelevt = "mousewheel";
+	var js_root = root.get(), js_buttons = buttons.get();
 	if(document.attachEvent){
-		for(var i=0; i<js_root.length; i++){
-			var thi=js_root[i];
+		for(var i = 0; i < js_root.length; i++){
+			var thi = js_root[i];
 			thi.attachEvent("on"+mousewheelevt, function(event)
 				{mouseWheel(event, $(event.srcElement).closest('.rolling_numbers'));}
 			);
@@ -146,8 +152,8 @@ function setRollingNumbers(root, settings){
 				{event.preventDefault();dragEnd(event, this);}
 			);
 		}
-		for(var i=0; i<js_buttons.length; i++){
-			var thi=js_buttons[i];
+		for(var i = 0; i < js_buttons.length; i++){
+			var thi = js_buttons[i];
 			thi.addEventListener('touchstart', function(event)
 					{buttonDown(event, this);}
 				);
@@ -163,7 +169,7 @@ function setRollingNumbers(root, settings){
 		}
 	}
 	else if(document.addEventListener)
-		for(var i=0; i<js_root.length; i++){
+		for(var i = 0; i < js_root.length; i++){
 			js_root[i].addEventListener(mousewheelevt, function(event)
 				{mouseWheel(event, $(this));}
 			, false);
@@ -178,7 +184,7 @@ function setRollingNumbers(root, settings){
 					{event.preventDefault();dragEnd(event, this);}
 				, false);
 		}
-		for(var i=0; i<js_buttons.length; i++){
+		for(var i = 0; i < js_buttons.length; i++){
 			js_buttons[i].addEventListener('touchstart', function(event)
 					{buttonDown(event, this);}
 				, false);
@@ -193,32 +199,34 @@ function setRollingNumbers(root, settings){
 				, false);
 		}
 	
+	//handle the keyboard editability including only numbers, arrows and deletion keys
 	inputs_container.on("keydown", function(event){
 		if(!fields.disabled && fields.editable){
-			var source=$(this);
-			var keycode=event.which;
+			var source = $(this);
+			var keycode = event.which;
 			if(keycode<48 || (keycode>57 && keycode<96) || keycode>105){ //not numbers
 				if(keycode<37 || keycode>40){ //not arrows 
-					if(keycode!=8 && keycode!=46) //not extra keys: backspace, canc
+					if(keycode != 8 && keycode != 46) //not extra keys: backspace, canc
 						event.preventDefault();
 				}
-				else if(keycode==38 || keycode==40){//up and down arrows
+				else if(keycode == 38 || keycode == 40){//up and down arrows
 					modifyValue(source, 39-keycode, 0);
 				}
 			}
 		}
 		else event.preventDefault();
 	});
+	//make sure to update the value after typing
 	inputs_container.children().on("keyup", function(event){
 		if(!fields.disabled && fields.editable){
-			var source=$(this);
-			var x=Number(source.text());
-			if(isNaN(x)) x=0;
-			var currValue=source.closest('.rolling_numbers').val();
-			var keycode=event.which;
-			if(keycode<37 || keycode>40){//not arrows
+			var source = $(this);
+			var x = Number(source.text());
+			if(isNaN(x)) x = 0;
+			var currValue = source.closest('.rolling_numbers').val();
+			var keycode = event.which;
+			if(keycode < 37 || keycode > 40){//not arrows
 				source.text(currValue);
-				if(fields.step!=0) modifyValue(source.parent(), Math.round((Number(x)-Number(currValue))/fields.step), 0);
+				if(fields.step != 0) modifyValue(source.parent(), Math.round((Number(x)-Number(currValue))/fields.step), 0);
 			}
 		}
 	});
@@ -233,82 +241,71 @@ function setRollingNumbers(root, settings){
 		}
 	});
 
-	var coord=null, time, speed=0;
+	var coord = null, time, speed = 0;
 	function dragStart(event, sou){
-		if(fields.draggable && (event.type=="touchstart" || event.which==1) && !$(event.target).is('button')){
-			var source=$(sou).children('.rolling_numbers_input');
+		if(fields.draggable && (event.type == "touchstart" || event.which == 1) && !$(event.target).is('button')){
+			var source = $(sou).children('.rolling_numbers_input');
+			//if there's an animation in action, stop it starting the animation part that realign properly the numbers
 			source.stop();
 			source.queue(function () {
 				normalize($(this));
 				$(this).dequeue();
 			});
-			var d=new Date();
-			if(event.type=='mousedown') coord=event.pageY;
-			else if(event.type=='touchstart') coord=event.touches[0].pageY;
-			time=d.getTime();
-			speed=0;
+			var d = new Date();
+			if(event.type == 'mousedown') coord = event.pageY;
+			else if(event.type == 'touchstart') coord = event.touches[0].pageY;
+			time = d.getTime();
+			speed = 0;
 		}
 	}
 	root.on("mousemove", function(event){
 		dragMove(event, this);
 	});
 	function dragMove(event, sou){
-		if($(event.target).is('button')) coord=null;
-		else if(coord!=null){
-			var source=$(sou), amount;
-			var d=new Date();
-			if(event.type=='mousemove') amount=event.pageY-coord;
-			else if(event.type=='touchmove') amount=event.touches[0].pageY-coord;
-			coord=amount+coord;
+		if($(event.target).is('button')) coord = null;
+		else if(coord != null){
+			var source = $(sou), amount;
+			var d = new Date();
+			if(event.type == 'mousemove') amount = event.pageY-coord;
+			else if(event.type == 'touchmove') amount = event.touches[0].pageY-coord;
+			coord = amount+coord;
 			
-			if(fields.rolling) amount/=source.innerHeight();
-			speed=amount/(d.getTime()-time);
-			time=d.getTime();
+			//divide the amount by the height of the element to have a natural animation effect, otherwise the resulting speed is too much
+			if(fields.rolling) amount /= source.innerHeight();
+			speed = amount/(d.getTime()-time);
+			time = d.getTime();
 			modifyValue(source.children('.rolling_numbers_input'), amount, 0.01);
 		}
 	}
 	root.on("mouseup mouseleave", function(event){
 		dragEnd(event, this);
 	});
+	//set the max duration of the slowing effect applied to the rolling animation, 5 seconds render a natural slowing effect
 	function dragEnd(event, sou){
-		if(coord!=null && fields.rolling){
-			var duration=5000;
+		if(coord != null && fields.rolling){
+			var duration = 5000;
 			modifyValue($(sou).children('.rolling_numbers_input'), Math.round((speed/3.5)*duration), duration);
 		}
-		coord=null;
+		coord = null;
 	}
 	
-	var intervalID, interval_time=50, interval_duration=0;
+	var intervalID, interval_time = 50, interval_duration = 0;
 	buttons.on("mousedown", function(event){
 		buttonDown(event, this);
 	});
 	function buttonDown(event, sou){
 		event.stopPropagation();
-		if(event.which==1){
-			var source=$(sou);
-			var i=Number(source.val());
-			var inputs_cont=source.closest('.rolling_numbers').children('.rolling_numbers_input');
+		if(event.which == 1){
+			var source = $(sou);
+			var i = Number(source.val());
+			var inputs_cont = source.closest('.rolling_numbers').children('.rolling_numbers_input');
 			modifyValue(inputs_cont, i, 500);
+			//keeping the mouse pressed on one button at first rolls by one step, then modify the value faster and repeatedly without the rolling effect
 			intervalID = setTimeout(function(){
 				intervalID = setInterval(function(){
 					modifyValue(inputs_cont, i, interval_duration);
 				}, interval_time);
 			}, 500);
-		}
-	}
-	buttons.on("mouseenter", function(event){
-		buttonEnter(event, this);
-	});
-	function buttonEnter(event, sou){
-		event.stopPropagation();
-		if(event.buttons==1){
-			var source=$(sou);
-			var i=Number(source.val());
-			var inputs_cont=source.closest('.rolling_numbers').children('.rolling_numbers_input');
-			clearInterval(intervalID);
-			intervalID = setInterval(function(){
-				modifyValue(inputs_cont, i, interval_duration);
-			}, interval_time);
 		}
 	}
 	buttons.on("mouseup mouseleave", function(event){
@@ -320,63 +317,65 @@ function setRollingNumbers(root, settings){
 	}
 	
 	function modifyValue(source, increment, duration){
-		var source_root=source.parent();
-		var l_height=source_root.innerHeight();
-		var step_value=fields.step;
-		var max=fields.max, min=fields.min;
-		var decim=fields.decimal;
+		var source_root = source.parent();
+		var l_height = source_root.innerHeight();
+		var step_value = fields.step;
+		var max = fields.max, min = fields.min;
+		var decim = fields.decimal;
 		
-		var currValue=Number(source_root.val()), delta;
-		if(currValue+increment*step_value>max && increment>=0.2)
-			delta=parseInt((max-currValue)/step_value);
-		else if(currValue+increment*step_value<min && increment<=-0.2)
-			delta=parseInt((min-currValue)/step_value);
+		//if the increment crosses one of the limit, calculate the steps to reach the limit
+		var currValue = Number(source_root.val()), delta;
+		if(currValue+increment*step_value > max && increment >= 0.2)
+			delta = parseInt((max-currValue)/step_value);
+		else if(currValue+increment*step_value < min && increment <= -0.2)
+			delta = parseInt((min-currValue)/step_value);
 		else
-			delta=increment;
+			delta = increment;
 		
-		if(delta!=0){
-			var upBtn=source.siblings('.rolling_numbers_buttons').children(':first');
-			var downBtn=upBtn.next();
-			var turns=0;
+		if(delta != 0){
+			var upBtn = source.siblings('.rolling_numbers_buttons').children(':first');
+			var downBtn = upBtn.next();
+			var turns = 0;
 			var direction, inc_element;
-			if(delta>0){
-				direction=1;
-				inc_element=source.children(':first');
+			if(delta > 0){
+				direction = 1;
+				inc_element = source.children(':first');
 			}
 			else{
-				direction=-1;
-				inc_element=source.children(':last');
+				direction = -1;
+				inc_element = source.children(':last');
 			}
-			if(Math.abs(delta)>=1){
+			if(Math.abs(delta) >= 1){
 				upBtn.prop('disabled', false);
 				downBtn.prop('disabled', false);
 			}
-			if(duration>0 && fields.rolling){
+			if(duration > 0 && fields.rolling){
 				var position;
 				source.stop();
 				source.animate({defaultValue:"+="+delta*l_height},{
-					duration:duration*delta/increment,
+					duration: duration*delta/increment,//this formula calculates an animation duration that grants a natural effect for the animation
 					easing:'easeOutCubic',
 					step: function(now, fx){
-						var dummy=now.toFixed(decim);
-						position=dummy-l_height*turns;
-						var bound_check=false;
+						var dummy = now.toFixed(decim);
+						position = dummy-l_height*turns;
+						var bound_check = false;
 						
-						if(position>0 && direction==1)
-							bound_check=true;
-						else if(position<=-l_height && direction==-1)
-							bound_check=true;
-						else if(position<=-l_height/2)
+						if(position > 0 && direction == 1)
+							bound_check = true;
+						else if(position <= -l_height && direction == -1)
+							bound_check = true;
+						//if a number DIV element covers more than the half of the Rolling Numbers Input visible space, it becomes the active one
+						else if(position <= -l_height/2)
 							setActiveInput(source.children(':last'));
-						else if(position>-l_height/2)
+						else if(position > -l_height/2)
 							setActiveInput(source.children(':first'));
-						
-						var sum=Number(inc_element.text())+direction*step_value;
-						if(bound_check && !(sum>max || sum<min)){
-							turns+=direction;
-							position-=direction*l_height;
+						//calculate the next value to display, if it doesn't cross the limits, adjust the vertical position to create an infinite motion effect and properly update the values of the number DIV elements and the activeInput
+						var sum = Number(inc_element.text())+direction*step_value;
+						if(bound_check && !(sum > max || sum < min)){
+							turns += direction;
+							position -= direction*l_height;
 							inc_element.text(function(a,old){
-								var sibling=inc_element.siblings();
+								var sibling = inc_element.siblings();
 								sibling.text(old);
 								setActiveInput(sibling);
 								return sum.toFixed(decim);
@@ -391,24 +390,24 @@ function setRollingNumbers(root, settings){
 				});
 			}
 			else{
-				//immediate change value, triggered from keyboard interaction and fields.rolling=false
+				//immediate change value, triggered from keyboard and button interaction or from the developer via the setting rolling=false
 				inc_element.text(function(a,old){
-					old=Number(old);
-					var sum=old+delta*step_value;
-					var sibl=$(this).siblings();
+					old = Number(old);
+					var sum = old+delta*step_value;
+					var sibl = $(this).siblings();
 					//control if the increment exceed the limits
-					if(sum>max || sum<min){
+					if(sum > max || sum < min){
 						//set active input and show it
-						var pos=-inc_element.position().top;
+						var pos = -inc_element.position().top;
 						setActiveInput(inc_element);
 						source.css('top',(pos)+'px');
 						source.prop('defaultValue', pos);
 						source_root.css('backgroundPosition','0px '+(pos)+'px');
 						//change text to the nearest admitted
 						var bound;
-						if(delta>0) bound=max-old;
-						else bound=min-old;
-						bound=old+parseInt(bound/step_value)*step_value;
+						if(delta > 0) bound = max-old;
+						else bound = min-old;
+						bound = old+parseInt(bound/step_value)*step_value;
 						sibl.text((bound-direction*step_value).toFixed(decim));
 						return bound.toFixed(decim);
 					}
@@ -418,25 +417,28 @@ function setRollingNumbers(root, settings){
 					}
 				});
 			}
+			//the final step resets the situation for a new use of this function, updates the value attribute of the root element and the input hidden child and disables one of the button if the value is one of the limits
 			source.queue(function(){
 				source.prop('defaultValue', function(a, old){
 					if(isNaN(old))
-						old=0;
+						old = 0;
 					return old-turns*l_height;
 				});
-				var active_input=source.children('[title]');
-				var finalValue=active_input.text();
+				var active_input = source.children('[title]');
+				var finalValue = active_input.text();
 				source_root.attr('value', finalValue);
 				source_root.children(':last').attr('value', finalValue);
 				if(! fields.disabled){
-					upBtn.prop('disabled', (finalValue>=max));
-					downBtn.prop('disabled', (finalValue<=min));
+					upBtn.prop('disabled', (finalValue >= max));
+					downBtn.prop('disabled', (finalValue <= min));
 				}
 				source.dequeue();
 			});
 		}
 		else clearInterval(intervalID);
 	}
+	
+	//animates the random vertical position of the numbers and realigns it to the proper location.
 	function normalize(source){
 		source.animate({defaultValue:-source.children('[title]').position().top},{
 			duration:500,
@@ -446,31 +448,34 @@ function setRollingNumbers(root, settings){
 				source.parent().css('backgroundPosition','0px '+(now)+'px');
 			},
 			complete: function(){
-				coord=null;
+				coord = null;
 			}
 		});
 	}
+	
+	//if the mousewheel is scrolled over the numbers, the value change following the mousewheel increment
 	function mouseWheel(event, source){
 		if(! fields.disabled){
-			var inp_cont=source.children('.rolling_numbers_input');
+			var inp_cont = source.children('.rolling_numbers_input');
 			
 			var inv;
-			if(fields.mousewheel_invert) inv=-1;
-			else inv=1;
+			if(fields.mousewheel_invert) inv = -1;
+			else inv = 1;
 			
-			var incr=-inv;
+			var incr = -inv;
 			if(event.detail)
-				incr*=event.detail/3;
+				incr *= event.detail/3;
 			else if(event.wheelDelta)
-				incr*=-event.wheelDelta/120;
+				incr *= -event.wheelDelta/120;
 			
 			modifyValue(inp_cont, incr, 500);
 			event.preventDefault();
 		}
 	}
 	
+	//set by code which DIV element used to display the value is the visible one the user
 	function setActiveInput(element){
-		var attr='title';
+		var attr = 'title';
 		element.siblings().removeAttr(attr);
 		element.attr(attr, '');
 		return element;
@@ -478,67 +483,67 @@ function setRollingNumbers(root, settings){
 	function setEditable(bool){
 		if(!ie && !safari && !('ontouchstart' in document.documentElement)){
 			bool=Boolean(bool);
-			fields.editable=bool;
+			fields.editable = bool;
 			inputs_container.children().prop('contenteditable', bool);
 			if(bool) root.css('cursor', 'text');
 			else root.css('cursor', 'default');
 		}
 	}
 	function setDisabled(bool){
-		bool=Boolean(bool);
+		bool = Boolean(bool);
 		root.add(buttons).attr('disabled', bool);
-		fields.disabled=bool;
-		fields.draggable=!bool;
+		fields.disabled = bool;
+		fields.draggable = !bool;
 	}
 	
-	//public interface
+	//public API for developers
 	return {
 		disable: function(disab){
-			if(disab==null) return Boolean(fields.disabled);
+			if(disab == null) return Boolean(fields.disabled);
 			else setDisabled(disab);
 		},
 		draggable: function(drag){
-			if(drag==null) return Boolean(fields.draggable);
+			if(drag == null) return Boolean(fields.draggable);
 			else fields.draggable=drag;
 		},
 		editable: function(edit){
-			if(edit==null) return Boolean(fields.editable);
+			if(edit == null) return Boolean(fields.editable);
 			else setEditable(edit);
 		},
 		limits: function(lim_obj){
-			if(lim_obj==null) return {min:fields.min, max:fields.max};
+			if(lim_obj == null) return {min:fields.min, max:fields.max};
 			else{
-				var max, min, error=false;
-				if(lim_obj.max!=null) max = lim_obj.max;
-				else max=fields.max;
-				if(lim_obj.min!=null) min = lim_obj.min;
-				else min=fields.min;
+				var max, min, error = false;
+				if(lim_obj.max != null) max = lim_obj.max;
+				else max = fields.max;
+				if(lim_obj.min != null) min = lim_obj.min;
+				else min = fields.min;
 				//several validation controls using new limits
-				if(max<min){
+				if(max < min){
 					console.error("impossible range of limits, max is lower than min");
-					error=true;
+					error = true;
 				}
 				root.each(function(){
 					var x = $(this).val();
-					if(lim_obj.max!=null && x>max){
+					if(lim_obj.max != null && x > max){
 						console.log($(this));
 						console.error("has value higher than max limit");
-						error=true;
+						error = true;
 					}
-					if(lim_obj.min!=null && x<min){
+					if(lim_obj.min != null && x < min){
 						console.log($(this));
 						console.error("has value lower than min limit");
-						error=true;
+						error = true;
 					}
 				});
 				if(!error){
 					$.extend(fields, lim_obj);
 					if(! fields.disabled){
-						//refresh buttons state according to new limits
+						//refresh buttons state according to the new limits
 						root.each(function(){
 							var source = $(this);
-							source.find('button:first').prop('disabled', (source.val()>=max));
-							source.find('button:last').prop('disabled', (source.val()<=min));
+							source.find('button:first').prop('disabled', (source.val() >= max));
+							source.find('button:last').prop('disabled', (source.val() <= min));
 						});
 					}
 				}
@@ -546,19 +551,19 @@ function setRollingNumbers(root, settings){
 			}
 		},
 		rolling: function(roll){
-			if(roll==null) return Boolean(fields.rolling);
-			else fields.rolling=roll;
+			if(roll == null) return Boolean(fields.rolling);
+			else fields.rolling = roll;
 		},
 		toggleButtons: function(toggle_b){
-			var b_container=buttons.parent();
+			var b_container = buttons.parent();
 			
-			if(toggle_b==null) b_container.toggle();
+			if(toggle_b == null) b_container.toggle();
 			else b_container.toggle(Boolean(toggle_b));
-			fields.toggle_buttons=toggle_b;
+			fields.toggle_buttons = toggle_b;
 		},
 		value: function(increment, duration){
-			if(increment==null || duration==null){
-				var elements=new Array();
+			if(increment == null || duration == null){
+				var elements = new Array();
 				root.each(function(){
 					elements.push($(this).val());
 				});
@@ -600,23 +605,23 @@ function setRollingNumbers(root, settings){
 			}
 		},
 		setWidth: function(width){
-			//if width is not enough, the element will change height ratio
+			//if the width is not enough, the element will change height ratio
 			root.css('width', width);
 		},
 		turnToHtml5: function(settings){
 			inputs_container.stop();
 			var options;
-			if (settings!=null) options=settings;
-			else options=fields;
-			var html5="<input type='number'";
-			html5+=" min='"+options.min+"'";
-			html5+=" max='"+options.max+"'";
-			html5+=" step='"+options.step+"'";
-			if(fields.disabled) html5+=" disabled";
-			html5+="></input>";
+			if (settings != null) options = settings;
+			else options = fields;
+			var html5 = "<input type='number'";
+			html5 += " min='"+options.min+"'";
+			html5 += " max='"+options.max+"'";
+			html5 += " step='"+options.step+"'";
+			if(fields.disabled) html5 += " disabled";
+			html5 += "></input>";
 			root.html(html5);
 			root.each(function(){
-				var source=$(this), child=source.children();
+				var source=$(this), child = source.children();
 				child.attr('style', source.attr('style'));
 				child.val(source.val());
 				child.unwrap();
